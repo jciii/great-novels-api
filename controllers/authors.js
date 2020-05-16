@@ -14,10 +14,21 @@ const getAllAuthors = async (request, response) => {
 
 const getAuthorByIdWithNovelAndGenres = async (request, response) => {
   try {
-    const { id } = request.params
+    const { indentifier } = request.params
     const AuthorById = await models.Authors.findOne({
       attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt'],
-      where: { id },
+      where: {
+        [models.Op.or]: [
+          {
+            id: indentifier
+          },
+          {
+            nameFirst: { [models.Op.like]: `${indentifier}%` }
+          },
+          {
+            nameLast: { [models.Op.like]: `${indentifier}%` },
+          }],
+      },
       include: [{
         attributes: ['id', 'title', 'authorId', 'createdAt', 'updatedAt'],
         model: models.Novels,

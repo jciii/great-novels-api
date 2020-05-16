@@ -9,8 +9,8 @@ const getAllNovelsWithAuthorsAndGenres = async (request, response) => {
         model: models.Authors
       },
       {
-        model: models.Genres,
         attributes: ['id', 'name', 'createdAt', 'updatedAt'],
+        model: models.Genres,
         through: {
           attributes: ['genreId', 'novelId', 'createdAt', 'updatedAt']
         }
@@ -25,10 +25,19 @@ const getAllNovelsWithAuthorsAndGenres = async (request, response) => {
 
 const getNovelByIdWithAuthorAndGenres = async (request, response) => {
   try {
-    const { id } = request.params
+    const { indentifier } = request.params
     const novelByIdWithAuthorAndGenres = await models.Novels.findOne({
       attributes: ['id', 'title', 'authorId', 'createdAt', 'updatedAt'],
-      where: { id },
+      where: {
+        [models.Op.or]: [
+          {
+            id: indentifier
+          },
+          {
+            title: { [models.Op.like]: `%${indentifier}%` }
+          },
+        ],
+      },
       include: [{
         attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt'],
         model: models.Authors
