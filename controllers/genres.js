@@ -3,7 +3,7 @@ const models = require('../models')
 const getAllGenres = async (request, response) => {
   try {
     const genres = await models.Genres.findAll({
-      attributes: ['id', 'name', 'createdAt', 'updatedAt']
+      attributes: { exclude: ['deletedAt'] },
     })
 
     return response.send(genres)
@@ -16,16 +16,16 @@ const getGenresWithNovelsandAuthorsByGenreId = async (request, response) => {
   try {
     const { id } = request.params
     const genresWithNovelAndAuthor = await models.Genres.findOne({
-      attributes: ['id', 'name', 'createdAt', 'updatedAt'],
+      attributes: { exclude: ['deletedAt'] },
       where: { id },
       include: [{
-        attributes: ['id', 'title', 'authorId', 'createdAt', 'updatedAt'],
+        attributes: { exclude: ['deletedAt'] },
         model: models.Novels,
         through: {
           attributes: []
         },
         include: [{
-          attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt'],
+          attributes: { exclude: ['deletedAt'] },
           model: models.Authors
         }]
       }]

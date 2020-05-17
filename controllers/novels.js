@@ -3,16 +3,16 @@ const models = require('../models')
 const getAllNovelsWithAuthorsAndGenres = async (request, response) => {
   try {
     const allNovelsWithAuthorsAndGenres = await models.Novels.findAll({
-      attributes: ['id', 'title', 'authorId', 'createdAt', 'updatedAt'],
+      attributes: { exclude: ['deletedAt'] },
       include: [{
-        attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt'],
+        attributes: { exclude: ['deletedAt'] },
         model: models.Authors
       },
       {
         attributes: ['id', 'name', 'createdAt', 'updatedAt'],
         model: models.Genres,
         through: {
-          attributes: ['genreId', 'novelId', 'createdAt', 'updatedAt']
+          attributes: { exclude: ['deletedAt'] }
         }
       }]
     })
@@ -23,11 +23,11 @@ const getAllNovelsWithAuthorsAndGenres = async (request, response) => {
   }
 }
 
-const getNovelByIdWithAuthorAndGenres = async (request, response) => {
+const getNovelByIdentifierWithAuthorAndGenres = async (request, response) => {
   try {
     const { indentifier } = request.params
     const novelByIdWithAuthorAndGenres = await models.Novels.findOne({
-      attributes: ['id', 'title', 'authorId', 'createdAt', 'updatedAt'],
+      attributes: { exclude: ['deletedAt'] },
       where: {
         [models.Op.or]: [
           {
@@ -39,14 +39,14 @@ const getNovelByIdWithAuthorAndGenres = async (request, response) => {
         ],
       },
       include: [{
-        attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt'],
+        attributes: { exclude: ['deletedAt'] },
         model: models.Authors
       },
       {
         model: models.Genres,
         attributes: ['id', 'name', 'createdAt', 'updatedAt'],
         through: {
-          attributes: ['genreId', 'novelId', 'createdAt', 'updatedAt']
+          attributes: { exclude: ['deletedAt'] },
         }
       }]
     })
@@ -57,4 +57,4 @@ const getNovelByIdWithAuthorAndGenres = async (request, response) => {
   }
 }
 
-module.exports = { getAllNovelsWithAuthorsAndGenres, getNovelByIdWithAuthorAndGenres }
+module.exports = { getAllNovelsWithAuthorsAndGenres, getNovelByIdentifierWithAuthorAndGenres }

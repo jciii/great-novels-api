@@ -3,7 +3,7 @@ const models = require('../models')
 const getAllAuthors = async (request, response) => {
   try {
     const authors = await models.Authors.findAll({
-      attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt']
+      attributes: { exclude: ['deletedAt'] }
     })
 
     return response.send(authors)
@@ -12,11 +12,11 @@ const getAllAuthors = async (request, response) => {
   }
 }
 
-const getAuthorByIdWithNovelAndGenres = async (request, response) => {
+const getAuthorByIdentifierWithNovelAndGenres = async (request, response) => {
   try {
     const { indentifier } = request.params
     const AuthorById = await models.Authors.findOne({
-      attributes: ['id', 'nameFirst', 'nameLast', 'createdAt', 'updatedAt'],
+      attributes: { exclude: ['deletedAt'] },
       where: {
         [models.Op.or]: [
           {
@@ -30,13 +30,13 @@ const getAuthorByIdWithNovelAndGenres = async (request, response) => {
           }],
       },
       include: [{
-        attributes: ['id', 'title', 'authorId', 'createdAt', 'updatedAt'],
+        attributes: { exclude: ['deletedAt'] },
         model: models.Novels,
         include: [{
-          attributes: ['id', 'name', 'createdAt', 'updatedAt'],
+          attributes: { exclude: ['deletedAt'] },
           model: models.Genres,
           through: {
-            attributes: ['genreId', 'novelId', 'createdAt', 'updatedAt']
+            attributes: { exclude: ['deletedAt'] }
           }
         }],
       }]
@@ -49,5 +49,5 @@ const getAuthorByIdWithNovelAndGenres = async (request, response) => {
 }
 
 module.exports = {
-  getAllAuthors, getAuthorByIdWithNovelAndGenres
+  getAllAuthors, getAuthorByIdentifierWithNovelAndGenres
 }
